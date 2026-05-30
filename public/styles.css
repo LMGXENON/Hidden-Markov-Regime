@@ -101,39 +101,9 @@ body {
  .left-panel {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0;
   height: 100%;
   min-height: 0;
-}
-
-.left-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 6px;
-  background: #0e0e0e;
-  border: 1px solid #202020;
-  border-radius: 4px;
-}
-
-.left-toolbar .left-label {
-  color: #888888;
-  font-size: 11px;
-  margin-right: 6px;
-}
-
-.left-toolbar button {
-  background: #0b0b0b;
-  color: #ffffff;
-  border: 1px solid #333333;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  cursor: pointer;
-}
-
-.left-toolbar button:hover {
-  border-color: #00f2ff;
 }
 
 #left3d {
