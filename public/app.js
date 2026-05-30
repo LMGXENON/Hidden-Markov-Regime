@@ -15,6 +15,10 @@ const marketSelect = document.getElementById("marketSelect");
 const periodSelect = document.getElementById("periodSelect");
 const snapshotBtn = document.getElementById("snapshotBtn");
 const marketStatus = document.getElementById("marketStatus");
+const urlParams = new URLSearchParams(window.location.search);
+const wsDisabledByQuery = urlParams.get("ws") === "0" || urlParams.get("ws") === "false";
+const wsDisabledByHost = window.location.hostname.endsWith("vercel.app");
+const WS_DISABLED = wsDisabledByQuery || wsDisabledByHost;
 const UI_REVISION = "static-ui-v4";
 const DEFAULT_PERIODS = ["1y", "3y", "5y"];
 const DEFAULT_CAMERA = {
@@ -440,6 +444,10 @@ function onTick(idx) {
 }
 
 function connectWs() {
+  if (WS_DISABLED) {
+    startPolling();
+    return;
+  }
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
 
@@ -534,6 +542,8 @@ function stopPolling() {
 
 function startPolling() {
   if (pollIntervalId) return;
+  hud.textContent = "POLLING | HTTP";
+  hud.style.color = "#ff9800";
   // poll /health for the current index and update UI
   pollIntervalId = setInterval(async () => {
     try {
@@ -564,7 +574,8 @@ function startPolling() {
         if (snapshotBtn) snapshotBtn.disabled = false;
       }
       onTick(json.index);
-      hud.textContent = dataset ? `OFFLINE | ${dataset.names?.[dataset.states?.[currentIndex]] || "OFFLINE"}` : "OFFLINE";
+      hud.textContent = dataset ? `POLLING | ${dataset.names?.[dataset.states?.[currentIndex]] || "OFFLINE"}` : "POLLING";
+      hud.style.color = dataset ? stateColors[dataset.states[currentIndex]] || "#ff9800" : "#ff9800";
     } catch (err) {
       // ignore transient errors
     }
