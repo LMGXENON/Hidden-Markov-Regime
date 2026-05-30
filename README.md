@@ -132,6 +132,11 @@ Health: `http://localhost:8050/health`
 - **Posterior**: regime probability after observing data.  
 - **Equity curve**: cumulative performance (base 100).  
 
+### Glossary (UI reference)
+- **Hidden Markov Model (HMM, HNM)**: A statistical model where the system switches between unobserved regimes; observations are drawn from state‑dependent distributions.
+- **Gaussian**: A normal distribution denoted $N(\mu, \sigma^2)$; used here to model returns within a regime.
+- **Regime matrix**: The transition probability matrix that governs switching between hidden regimes (states).
+
 ## Notes
 - Market data is fetched from yfinance (no paid API).
 - UI is locked to the PNG layout for visual parity.
