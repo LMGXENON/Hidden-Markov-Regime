@@ -7,6 +7,8 @@ let leftReady = false;
 let rightReady = false;
 let lastRegimeIdx = null;
 let lastRightRenderIndex = -1;
+let wsFailures = 0;
+let pollIntervalId = null;
 
 const hud = document.getElementById("hud");
 const marketSelect = document.getElementById("marketSelect");
@@ -442,6 +444,8 @@ function connectWs() {
   const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
 
   ws.onopen = () => {
+    wsFailures = 0;
+    if (pollIntervalId) stopPolling();
     hud.textContent = "LIVE | CONNECTED";
     hud.style.color = "#00ff41";
   };
@@ -457,7 +461,13 @@ function connectWs() {
       hud.textContent = "RECONNECTING...";
       hud.style.color = "#ff9800";
     }
-    setTimeout(connectWs, 1000);
+    // try reconnecting a few times, then fall back to HTTP polling
+    wsFailures += 1;
+    if (wsFailures >= 3) {
+      startPolling();
+    } else {
+      setTimeout(connectWs, 1000);
+    }
   };
 
   ws.onmessage = (event) => {
@@ -513,6 +523,52 @@ function connectWs() {
       onTick(msg.payload.index);
     }
   };
+}
+
+function stopPolling() {
+  if (pollIntervalId) {
+    clearInterval(pollIntervalId);
+    pollIntervalId = null;
+  }
+}
+
+function startPolling() {
+  if (pollIntervalId) return;
+  // poll /health for the current index and update UI
+  pollIntervalId = setInterval(async () => {
+    try {
+      const res = await fetch(`/api/state`);
+      if (!res.ok) return;
+      const json = await res.json();
+      if (!json || !Number.isFinite(json.index)) return;
+      // if server provided a dataset, apply it (keeps UI consistent without WS)
+      if (json.dataset) {
+        dataset = json.dataset;
+        // compute derived ranges like WS handler
+        const pmin = Math.min(...dataset.prices);
+        const pmax = Math.max(...dataset.prices);
+        const ppad = (pmax - pmin) * 0.06;
+        dataset.priceRange = [pmin - ppad, pmax + ppad];
+        const rmin = Math.min(...dataset.returns);
+        const rmax = Math.max(...dataset.returns);
+        const rpad = (rmax - rmin) * 0.1;
+        dataset.returnRange = [rmin - rpad, rmax + rpad];
+        const eq = dataset.prices.map((p) => (p / dataset.S0) * 100);
+        const emin = Math.min(...eq);
+        const emax = Math.max(...eq);
+        const epad = (emax - emin) * 0.06;
+        dataset.equityRange = [emin - epad, emax + epad];
+        if (dataset.symbols && dataset.symbols.length) populateMarkets(dataset.symbols, dataset.symbol);
+        if (dataset.periods && dataset.periods.length) populatePeriods(dataset.periods, dataset.period);
+        // enable snapshot if available
+        if (snapshotBtn) snapshotBtn.disabled = false;
+      }
+      onTick(json.index);
+      hud.textContent = dataset ? `OFFLINE | ${dataset.names?.[dataset.states?.[currentIndex]] || "OFFLINE"}` : "OFFLINE";
+    } catch (err) {
+      // ignore transient errors
+    }
+  }, 1000);
 }
 
 function populateMarkets(symbols, current) {

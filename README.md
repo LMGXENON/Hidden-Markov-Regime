@@ -135,3 +135,29 @@ Health: `http://localhost:8050/health`
 ## Notes
 - Market data is fetched from yfinance (no paid API).
 - UI is locked to the PNG layout for visual parity.
+
+## Deployment notes
+
+- Vercel (serverless) — Notes: Vercel's Serverless Functions do not support long‑lived TCP sockets or persistent WebSocket servers. The app includes an HTTP polling fallback so the UI can work on Vercel, but for full WebSocket real‑time behavior deploy to a platform that supports persistent Node processes.
+
+- Recommended hosts that support WebSockets / long‑running Node processes:
+  - Render, Railway, Fly.io, Heroku (traditional dynos), DigitalOcean App Platform.
+  - Alternatively, containerize and deploy to any Docker host or Kubernetes cluster.
+
+- Quick deploy (Render example):
+
+```bash
+# create a new Web Service on Render pointing to this repo
+# set the build command:  npm install
+# set the start command:  node server.js
+# set environment variables (optional):
+#   PORT=10000          # Render provides its own port, leave empty to use default
+#   PYTHON_BIN=python3
+#   TICK_INTERVAL_MS=120
+```
+
+- If you must use Vercel or another serverless platform, either:
+  - Use the HTTP polling fallback (already included) — the UI will periodically fetch `/api/state` and render updates without WebSockets, or
+  - Use a managed realtime provider (Pusher, Ably, Upstash Realtime) and adapt `server.js` and `public/app.js` to publish/subscribe via that service.
+
+If you want, I can add a Dockerfile or a `Procfile` for easier deployment to these hosts.

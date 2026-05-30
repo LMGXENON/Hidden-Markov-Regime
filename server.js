@@ -307,6 +307,12 @@ app.get("/health", (_req, res) => {
   });
 });
 
+// Return the current index and the latest dataset (if available).
+// Useful for HTTP-polling clients and platforms without WebSocket support.
+app.get("/api/state", (_req, res) => {
+  res.json({ ok: true, index, dataset, symbol: currentSymbol, period: currentPeriod, symbols: SYMBOLS, periods: PERIODS });
+});
+
 wss.on("connection", (socket) => {
   if (dataset) {
     socket.send(JSON.stringify({ type: "meta", payload: { ...dataset, symbols: SYMBOLS, period: currentPeriod, periods: PERIODS } }));
