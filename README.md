@@ -161,3 +161,37 @@ Health: `http://localhost:8050/health`
   - Use a managed realtime provider (Pusher, Ably, Upstash Realtime) and adapt `server.js` and `public/app.js` to publish/subscribe via that service.
 
 If you want, I can add a Dockerfile or a `Procfile` for easier deployment to these hosts.
+
+### Docker & quick deploy
+
+A Docker image bundles Node + Python (yfinance). Build and run locally:
+
+```bash
+# build
+docker build -t prism-hmm .
+
+# run (exposes port 8050)
+docker run --rm -p 8050:8050 prism-hmm
+
+# then open http://localhost:8050
+```
+
+### Heroku / Render quick start
+
+If you prefer a Platform‑as‑a‑Service, use the included `Procfile`:
+
+Heroku:
+
+```bash
+heroku create my-prism-hmm
+git push heroku main
+heroku open
+```
+
+Render (Web Service):
+
+- Create a new Web Service from GitHub.
+- Build Command: `npm install`
+- Start Command: `node server.js`
+
+Render will run a persistent Node process (good for WebSockets). If you deploy to Heroku/Render the `wss://.../ws` endpoint will work as expected.
