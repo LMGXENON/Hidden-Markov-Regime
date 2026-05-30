@@ -572,6 +572,10 @@ function startPolling() {
         if (dataset.periods && dataset.periods.length) populatePeriods(dataset.periods, dataset.period);
         // enable snapshot if available
         if (snapshotBtn) snapshotBtn.disabled = false;
+        if (WS_DISABLED) {
+          marketSelect.disabled = true;
+          marketStatus.textContent = `SIM only (${dataset.period})`;
+        }
       }
       onTick(json.index);
       hud.textContent = dataset ? `POLLING | ${dataset.names?.[dataset.states?.[currentIndex]] || "OFFLINE"}` : "POLLING";
@@ -592,7 +596,7 @@ function populateMarkets(symbols, current) {
     }
   }
   marketSelect.value = current;
-  marketSelect.disabled = false;
+  marketSelect.disabled = WS_DISABLED || symbols.length <= 1;
 }
 
 function populatePeriods(periods, current) {
@@ -652,7 +656,7 @@ async function requestMarketUpdate(symbol, period) {
   } catch (_err) {
     marketStatus.textContent = "Error";
   } finally {
-    marketSelect.disabled = false;
+    marketSelect.disabled = WS_DISABLED || marketSelect.options.length <= 1;
     periodSelect.disabled = false;
   }
 }

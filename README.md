@@ -140,6 +140,11 @@ Health: `http://localhost:8050/health`
 
 - Vercel (serverless) — Notes: Vercel's Serverless Functions do not support long‑lived TCP sockets or persistent WebSocket servers. The app includes an HTTP polling fallback so the UI can work on Vercel, but for full WebSocket real‑time behavior deploy to a platform that supports persistent Node processes.
 
+- Vercel behavior in this repo:
+  - `/api/state` and `/api/market` are serverless endpoints (see `api/`), using **synthetic SIM data only**.
+  - The client disables WebSockets on `*.vercel.app` and shows `POLLING | ...`.
+  - This keeps the dashboard functional on Vercel without WebSockets or Python.
+
 - Recommended hosts that support WebSockets / long‑running Node processes:
   - Render, Railway, Fly.io, Heroku (traditional dynos), DigitalOcean App Platform.
   - Alternatively, containerize and deploy to any Docker host or Kubernetes cluster.
