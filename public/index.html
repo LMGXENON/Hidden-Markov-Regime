@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hidden Markov Regime Detection</title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <h1 class="title">Hidden Markov Regime Detection</h1>
+      <div class="subline">
+        y_t | s_t ~ N(μ_{s_t}, σ_{s_t}^2) &nbsp;&nbsp;|&nbsp;&nbsp; P(s_t | y) ∝ α_t(s_t) β_t(s_t)
+      </div>
+      <div class="subline2">
+        3 regimes: Bull μ=+0.09% &nbsp;&nbsp; Bear μ=-0.06% &nbsp;&nbsp; Crisis μ=-0.20%
+      </div>
+      <div class="market-row">
+        <label for="marketSelect">Market</label>
+        <select id="marketSelect"></select>
+        <label for="periodSelect">Range</label>
+        <select id="periodSelect"></select>
+        <button id="snapshotBtn" type="button">Snapshot</button>
+        <span id="marketStatus">Loading…</span>
+      </div>
+
+      <div class="board">
+        <div class="left-panel">
+          <div class="left-toolbar">
+            <span class="left-label">3D View</span>
+          </div>
+          <div class="left-container">
+            <div id="left3d"></div>
+            <div id="leftOverlay" class="left-overlay" title="Interaction disabled"></div>
+          </div>
+        </div>
+        <div class="right-column">
+          <div id="right4"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="glossary" class="glossary">
+      <h2 class="glossary-title">Glossary</h2>
+      <div class="glossary-item">
+        <span class="term-name">Hidden Markov Model</span>
+        <span class="term-abbrev">(HMM, HNM)</span>
+        <div class="term-def">A statistical model where the system is assumed to switch between unobserved states (regimes). Observations are drawn from state-dependent distributions.</div>
+      </div>
+      <div class="glossary-item">
+        <span class="term-name">Gaussian</span>
+        <div class="term-def">A normal distribution denoted N(μ, σ²); used here to model observations within a regime.</div>
+      </div>
+      <div class="glossary-item">
+        <span class="term-name">Regime matrix</span>
+        <div class="term-def">The transition probability matrix that governs switching between hidden regimes (states).</div>
+      </div>
+    </div>
+
+    <div id="hud">CONNECTING...</div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
