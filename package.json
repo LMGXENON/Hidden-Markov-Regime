@@ -1,15 +1,10 @@
 {
   "name": "prism-hmm-dashboard",
   "version": "1.0.0",
-  "description": "Hidden Markov Regime dashboard (Node.js + vanilla web)",
-  "main": "server.js",
+  "description": "Hidden Markov Regime dashboard (Vercel serverless + static)",
+  "main": "api/state.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "check": "node --check server.js"
+    "check": "node --check api/state.js && node --check api/market.js"
   },
-  "dependencies": {
-    "express": "^5.2.1",
-    "ws": "^8.20.1"
-  }
+  "dependencies": {}
 }

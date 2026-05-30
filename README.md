@@ -6,26 +6,26 @@
 ## Highlights
 - **3‑state HMM** (Bull / Bear / Crisis) with Gaussian emissions.
 - **Forward‑Backward inference** for smoothed regime probabilities.
-- **Live WebSocket stream** driving the real‑time UI.
-- **Node.js + Plotly.js** (no React).
-- **Market + range selector** (1y / 3y / 5y) and **snapshot export**.
+- **Serverless SIM stream** driving the real‑time UI.
+- **Vercel + Plotly.js** (no React).
+- **Range selector** (1y / 3y / 5y) and **snapshot export**.
 - **3D controls**: zoom, fit, reset.
 
 ## What it does
-Fetches real market prices via **yfinance**, computes log returns, infers hidden regimes, and renders a live dashboard with:
+Generates synthetic HMM prices, computes log returns, infers hidden regimes, and renders a live dashboard with:
 1. **Transition matrix (3D)** — P(sₜ₊₁ | sₜ) for regime switching.
 2. **Price + regime fill** — price series with regime shading.
 3. **Returns barcode** — daily returns colored by regime.
 4. **Smoothed P(state)** — posterior probabilities across time.
 5. **Equity curve (base 100)** — cumulative performance.
 
-**Also included:** a **SIM** market option that uses synthetic HMM returns (the original baseline before yfinance). This is useful for controlled demos and comparisons.
+**SIM only:** The Vercel build uses synthetic HMM returns for a fast, consistent demo.
 
 ## How it works (pipeline)
-1. **Fetch** daily prices from yfinance for the selected ticker.
+1. **Simulate** daily prices from the HMM model.
 2. **Compute** log returns from price series.
 3. **Infer** posteriors P(sₜ | y₁:ₜ) with Forward‑Backward.
-4. **Stream** updates over WebSocket at a steady tick rate.
+4. **Serve** updates from a serverless endpoint at a steady tick rate.
 5. **Render** with Plotly while preserving the PNG layout and theme.
 
 ## Model details
@@ -36,16 +36,14 @@ Fetches real market prices via **yfinance**, computes log returns, infers hidden
 - **Output**: state posteriors, inferred regime, equity curve  
 
 ## Backend & data flow
-- **Python fetcher (`backend/fetch_yfinance.py`)** pulls prices from yfinance and outputs JSON.
-- **Server (`server.js`)** runs the HMM inference once, then **streams only a tick index** over WebSocket.
-- **Client (`public/app.js`)** receives the precomputed arrays (prices/returns/gamma) and renders the current frame.  
+- **Serverless API (`api/state.js`)** generates the dataset and returns a time‑based tick index.
+- **Client (`public/app.js`)** receives the precomputed arrays (prices/returns/gamma) and renders the current frame.
 - This keeps the layout stable, fast, and visually identical to the PNG while still updating live.
 
 **Runtime loop**
-1. Build dataset (yfinance prices or SIM synthetic returns) + infer.
-2. Send `{meta}` over WebSocket (arrays + parameters).
-3. Broadcast `{tick: index}` at `TICK_INTERVAL_MS`.
-4. Client updates the 3D matrix highlight + right‑panel slices.
+1. Build dataset (synthetic SIM returns) + infer.
+2. Serve `{dataset, index}` from `/api/state`.
+3. Client updates the 3D matrix highlight + right‑panel slices.
 
 ## Math (formula breakdown)
 **Observation model (Gaussian emissions)**  
@@ -95,32 +93,31 @@ Equity plot is base‑100:
 - **Transition matrix**: regime switching likelihoods.  
 
 ## Tech stack
-- **Server**: Node.js + Express + WebSocket (`ws`)
+- **Serverless**: Vercel Node Functions
 - **Frontend**: Plotly.js + vanilla JS + CSS
-- **Data**: Python `yfinance` fetcher (real market prices)
+- **Data**: synthetic SIM (no external API)
 - **Math**: JS HMM simulation + Forward‑Backward
 
 ## Run
 ```bash
-npm install
-python3 -m pip install yfinance
-node server.js
+vercel dev
 ```
-Open: `http://localhost:8050`  
-Health: `http://localhost:8050/health`
+Open: `http://localhost:3000`
 
 ## Project layout
 ```
 .
 ├─ assets/
 │  └─ Hidden_Markov_Regime.png
-├─ backend/
-│  └─ fetch_yfinance.py
 ├─ public/
 │  ├─ index.html
 │  ├─ styles.css
 │  └─ app.js
-├─ server.js
+├─ api/
+│  ├─ _lib/
+│  │  └─ hmm.js
+│  ├─ market.js
+│  └─ state.js
 ├─ package.json
 └─ package-lock.json
 ```
@@ -134,5 +131,5 @@ Health: `http://localhost:8050/health`
 
 
 ## Notes
-- Market data is fetched from yfinance (no paid API).
+- SIM‑only build intended for Vercel deployment.
 - UI is locked to the PNG layout for visual parity.
