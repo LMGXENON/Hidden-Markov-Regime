@@ -142,6 +142,7 @@ Health: `http://localhost:8050/health`
 
 - Vercel behavior in this repo:
   - `/api/state` and `/api/market` are serverless endpoints (see `api/`), using **synthetic SIM data only**.
+  - `/api/state` accepts a `period` query (1y/3y/5y) to keep the Range selector working.
   - The client disables WebSockets on `*.vercel.app` and shows `POLLING | ...`.
   - This keeps the dashboard functional on Vercel without WebSockets or Python.
 

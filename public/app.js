@@ -549,7 +549,8 @@ function startPolling() {
   // poll /health for the current index and update UI
   pollIntervalId = setInterval(async () => {
     try {
-      const res = await fetch(`/api/state`);
+      const activePeriod = periodSelect.value || dataset?.period || DEFAULT_PERIODS[DEFAULT_PERIODS.length - 1];
+      const res = await fetch(`/api/state?period=${encodeURIComponent(activePeriod)}`);
       if (!res.ok) return;
       const json = await res.json();
       if (!json || !Number.isFinite(json.index)) return;
@@ -647,7 +648,7 @@ async function requestMarketUpdate(symbol, period) {
       // populate selects and enable snapshot
       if (dataset.symbols && dataset.symbols.length) populateMarkets(dataset.symbols, dataset.symbol);
       if (dataset.periods && dataset.periods.length) populatePeriods(dataset.periods, dataset.period);
-      marketStatus.textContent = `Live (${json.period})`;
+      marketStatus.textContent = WS_DISABLED ? `SIM only (${json.period})` : `Live (${json.period})`;
       if (snapshotBtn) snapshotBtn.disabled = false;
       // render first frame
       currentIndex = 0;
