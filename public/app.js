@@ -542,8 +542,10 @@ function stopPolling() {
 
 function startPolling() {
   if (pollIntervalId) return;
-  hud.textContent = "POLLING | HTTP";
-  hud.style.color = "#ff9800";
+  if (!dataset) {
+    hud.textContent = "LOADING...";
+    hud.style.color = "#ff9800";
+  }
   // poll /health for the current index and update UI
   pollIntervalId = setInterval(async () => {
     try {
@@ -578,8 +580,6 @@ function startPolling() {
         }
       }
       onTick(json.index);
-      hud.textContent = dataset ? `POLLING | ${dataset.names?.[dataset.states?.[currentIndex]] || "OFFLINE"}` : "POLLING";
-      hud.style.color = dataset ? stateColors[dataset.states[currentIndex]] || "#ff9800" : "#ff9800";
     } catch (err) {
       // ignore transient errors
     }
