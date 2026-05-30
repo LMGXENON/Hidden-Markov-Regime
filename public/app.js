@@ -115,7 +115,6 @@ function cubeWireframe(xc, yc, h, color) {
 }
 
 function renderLeft(currentRegimeIdx) {
-  if (!document.getElementById("left3d")) return;
   if (!dataset) return;
   if (leftReady && currentRegimeIdx === lastRegimeIdx) return;
   lastRegimeIdx = currentRegimeIdx;

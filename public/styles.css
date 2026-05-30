@@ -84,7 +84,7 @@ body {
   border: 1px solid #202020;
   background: #0b0b0b;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1.15fr;
   gap: 8px;
   height: 90vh;
   min-height: 720px;
@@ -92,9 +92,81 @@ body {
   box-sizing: border-box;
 }
 
+#left3d,
 #right4 {
   width: 100%;
   height: 100%;
+}
+
+ .left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  min-height: 0;
+}
+
+.left-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background: #0e0e0e;
+  border: 1px solid #202020;
+  border-radius: 4px;
+}
+
+.left-toolbar .left-label {
+  color: #888888;
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+.left-toolbar button {
+  background: #0b0b0b;
+  color: #ffffff;
+  border: 1px solid #333333;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.left-toolbar button:hover {
+  border-color: #00f2ff;
+}
+
+#left3d {
+  flex: 1;
+  min-height: 0;
+}
+
+/* force a square 1:1 aspect for the transition matrix 3D view */
+#left3d {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 820px;
+  height: 100%;
+  min-height: 480px;
+}
+
+.left-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.left-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  cursor: default;
+}
+
+.left-overlay {
+  pointer-events: all;
 }
 
 /* right column wrapper to hold left-side labels for each subplot */
@@ -169,6 +241,9 @@ body {
   .board {
     grid-template-columns: 1fr;
     height: auto;
+  }
+  #left3d {
+    min-height: 420px;
   }
   #right4 {
     min-height: 680px;
