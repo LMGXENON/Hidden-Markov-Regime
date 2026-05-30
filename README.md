@@ -8,7 +8,7 @@
 - **Forward‑Backward inference** for smoothed regime probabilities.
 - **Serverless SIM stream** driving the real‑time UI.
 - **Vercel + Plotly.js** (no React).
-- **Range selector** (1y / 3y / 5y) and **snapshot export**.
+- **SIM‑only range selector** (1y / 3y / 5y) and **snapshot export**.
 - **3D controls**: zoom, fit, reset.
 
 ## What it does
@@ -100,24 +100,28 @@ Equity plot is base‑100:
 
 ## Run
 ```bash
-vercel dev
+npx vercel dev
 ```
 Open: `http://localhost:3000`
+
+If you do not have the Vercel CLI installed, run:
+
+```bash
+npm i -g vercel
+```
 
 ## Project layout
 ```
 .
-├─ assets/
-│  └─ Hidden_Markov_Regime.png
-├─ public/
-│  ├─ index.html
-│  ├─ styles.css
-│  └─ app.js
 ├─ api/
 │  ├─ _lib/
 │  │  └─ hmm.js
 │  ├─ market.js
 │  └─ state.js
+├─ public/
+│  ├─ index.html
+│  ├─ styles.css
+│  └─ app.js
 ├─ package.json
 └─ package-lock.json
 ```
